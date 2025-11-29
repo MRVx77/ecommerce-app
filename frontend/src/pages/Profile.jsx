@@ -39,19 +39,24 @@ const Profile = () => {
           {user.name.charAt(0).toUpperCase()}
         </div>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-1">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-1 wrap-break-word">
           {user.name}
         </h2>
-        <p className="text-gray-600 mb-6">{user.email}</p>
 
-        <div className="bg-gray-100 rounded-xl p-4 text-left mb-4">
+        <p className="text-gray-600 mb-6 wrap-break-word">{user.email}</p>
+
+        <div className="bg-gray-100 rounded-xl p-4 text-left mb-4 wrap-break-word">
           <p className="text-sm text-gray-500">Full Name</p>
-          <p className="text-lg font-medium text-gray-800">{user.name}</p>
+          <p className="text-lg font-medium text-gray-800 wrap-break-word">
+            {user.name}
+          </p>
         </div>
 
-        <div className="bg-gray-100 rounded-xl p-4 text-left">
+        <div className="bg-gray-100 rounded-xl p-4 text-left wrap-break-word">
           <p className="text-sm text-gray-500">Email Address</p>
-          <p className="text-lg font-medium text-gray-800">{user.email}</p>
+          <p className="text-lg font-medium text-gray-800 wrap-break-word">
+            {user.email}
+          </p>
         </div>
       </div>
     </div>
