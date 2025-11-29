@@ -34,7 +34,7 @@ const Profile = () => {
 
   return (
     <div className="flex justify-center items-center py-16 px-4">
-      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 text-center border">
+      <div className="bg-gray-200 shadow-2xl rounded-2xl w-full max-w-md p-8 text-center border">
         <div className="w-24 h-24 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-4xl font-semibold text-gray-600 mb-4">
           {user.name.charAt(0).toUpperCase()}
         </div>
