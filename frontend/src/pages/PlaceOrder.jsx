@@ -292,7 +292,7 @@ const PlaceOrder = () => {
           <div className="w-full text-end mt-8">
             <button
               type="submit"
-              className="bg-black text-white px-16 py-3 text-sm"
+              className="bg-black text-white px-16 py-3 text-sm cursor-pointer"
             >
               PLACE ORDER
             </button>
