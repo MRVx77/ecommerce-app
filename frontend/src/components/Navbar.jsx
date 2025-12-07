@@ -79,6 +79,14 @@ const Navbar = () => {
                 <p onClick={logout} className="cursor-pointer hover:text-black">
                   Logout
                 </p>
+                <a
+                  href="https://ecommerce-app-admin-beige.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-pointer hover:text-black"
+                >
+                  Admin Panel
+                </a>
               </div>
             </div>
           )}
