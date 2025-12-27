@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { Link, NavLink } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
+import { useLocation } from "react-router-dom";
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
 
@@ -13,6 +14,8 @@ const Navbar = () => {
     setToken,
     setCartItems,
   } = useContext(ShopContext);
+
+  const isCollectionPage = location.pathname.includes("collection");
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -46,12 +49,14 @@ const Navbar = () => {
       </ul>
 
       <div className="flex item-center gap-6">
-        <img
-          onClick={() => setShowSearch(true)}
-          src={assets.search_icon}
-          className="w-5 cursor-pointer"
-          alt=""
-        />
+        {isCollectionPage && (
+          <img
+            onClick={() => setShowSearch(true)}
+            src={assets.search_icon}
+            className="w-5 cursor-pointer"
+            alt=""
+          />
+        )}
 
         <div className="group relative">
           <img
@@ -79,14 +84,6 @@ const Navbar = () => {
                 <p onClick={logout} className="cursor-pointer hover:text-black">
                   Logout
                 </p>
-                <a
-                  href="https://ecommerce-app-admin-beige.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cursor-pointer hover:text-black"
-                >
-                  Admin Panel
-                </a>
               </div>
             </div>
           )}

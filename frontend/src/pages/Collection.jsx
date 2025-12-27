@@ -3,6 +3,7 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import { useMemo } from "react";
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
@@ -11,6 +12,34 @@ const Collection = () => {
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relavent");
+
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    if (showSearch && search) {
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (category.length > 0) {
+      result = result.filter((item) => category.includes(item.category));
+    }
+
+    if (subCategory.length > 0) {
+      result = result.filter((item) => subCategory.includes(item.subCategory));
+    }
+
+    if (sortType === "low-high") {
+      result.sort((a, b) => a.price - b.price);
+    }
+
+    if (sortType === "high-low") {
+      result.sort((a, b) => b.price - a.price);
+    }
+
+    return result;
+  }, [products, search, showSearch, category, subCategory, sortType]);
 
   const toggleCategory = (e) => {
     const value = e.target.value;
@@ -29,54 +58,6 @@ const Collection = () => {
       setSubCategory((prev) => [...prev, value]);
     }
   };
-
-  const applyFilter = () => {
-    let productsCopy = products.slice();
-    if (showSearch && search) {
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category)
-      );
-    }
-
-    if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
-      );
-    }
-
-    setFilterProducts(productsCopy);
-  };
-
-  const sortProducts = () => {
-    let filterProductsCopy = filterProducts.slice();
-
-    switch (sortType) {
-      case "low-high":
-        setFilterProducts(filterProductsCopy.sort((a, b) => a.price - b.price));
-        break;
-
-      case "high-low":
-        setFilterProducts(filterProductsCopy.sort((a, b) => b.price - a.price));
-        break;
-
-      default:
-        applyFilter();
-        break;
-    }
-  };
-
-  useEffect(() => {
-    applyFilter();
-  }, [category, subCategory, products, search, showSearch]);
-
-  useEffect(() => {
-    sortProducts();
-  }, [sortType]);
 
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
@@ -99,34 +80,34 @@ const Collection = () => {
             showFilter ? "" : "hidden"
           } sm:block`}
         >
-          <p className="mb-3 text-sm font-medium">CATEGORIES</p>
+          <p className="mb-3 text-sm font-medium">FABRIC TYPE</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className="flex gap-2">
               <input
                 onChange={toggleCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Men"}
+                value={"Mul"}
               />{" "}
-              Men
+              Mul Cotton Sarees
             </p>
             <p className="flex gap-2">
               <input
                 onChange={toggleCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Women"}
+                value={"Khandi"}
               />{" "}
-              Women
+              Khandi Cotton Sarees
             </p>
             <p className="flex gap-2">
               <input
                 onChange={toggleCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Kids"}
+                value={"Artisanal"}
               />{" "}
-              Kids
+              Artisanal Cotton Sarees
             </p>
           </div>
         </div>
@@ -136,34 +117,34 @@ const Collection = () => {
             showFilter ? "" : "hidden"
           } sm:block`}
         >
-          <p className="mb-3 text-sm font-medium">TYPE</p>
+          <p className="mb-3 text-sm font-medium">COLLECTION</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className="flex gap-2">
               <input
                 onChange={toggleSubCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Topwear"}
+                value={"Pastel"}
               />{" "}
-              Topwear
+              Pastel collection
             </p>
             <p className="flex gap-2">
               <input
                 onChange={toggleSubCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Bottomwear"}
+                value={"Classic"}
               />{" "}
-              Bottomwear
+              Classic Borders
             </p>
             <p className="flex gap-2">
               <input
                 onChange={toggleSubCategory}
                 className="w-3"
                 type="checkbox"
-                value={"Winterwear"}
+                value={"PureCotton"}
               />{" "}
-              Winterwear
+              Pure Cotton basics
             </p>
           </div>
         </div>
@@ -184,9 +165,9 @@ const Collection = () => {
         </div>
         {/* Map products */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filterProducts.map((item, index) => (
+          {filteredProducts.map((item) => (
             <ProductItem
-              key={index}
+              key={item._id}
               id={item._id}
               name={item.name}
               images={item.images}

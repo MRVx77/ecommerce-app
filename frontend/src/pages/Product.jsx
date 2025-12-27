@@ -9,15 +9,44 @@ const Product = () => {
   const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProdcutData] = useState(false);
   const [image, setImage] = useState("");
-  const [size, setSize] = useState("");
+  const review = Math.floor(Math.random() * 100) + 1;
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const handleImageSwipe = () => {
+    if (!touchStart || !touchEnd || !productData) return;
+
+    const distance = touchStart - touchEnd;
+    const imagesLength = productData.images.length;
+
+    // Swipe LEFT → Next image
+    if (distance > minSwipeDistance && currentImageIndex < imagesLength - 1) {
+      const nextIndex = currentImageIndex + 1;
+      setCurrentImageIndex(nextIndex);
+      setImage(productData.images[nextIndex]);
+    }
+
+    // Swipe RIGHT → Previous image
+    if (distance < -minSwipeDistance && currentImageIndex > 0) {
+      const prevIndex = currentImageIndex - 1;
+      setCurrentImageIndex(prevIndex);
+      setImage(productData.images[prevIndex]);
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
 
   const fetchProductData = async () => {
     products.map((item) => {
       if (item._id === productId) {
         setProdcutData(item);
+        setCurrentImageIndex(0);
         setImage(item.images[0]);
-
-        return null;
       }
     });
   };
@@ -35,16 +64,30 @@ const Product = () => {
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
             {productData.images.map((item, index) => (
               <img
-                onClick={() => setImage(item)}
+                onClick={() => {
+                  setImage(item);
+                  setCurrentImageIndex(index);
+                }}
                 src={item}
                 key={index}
-                className="w-[24%] sm:w-full sm:mb-3 shrink-0 cursor-pointer"
+                className={`w-[24%] sm:w-full sm:mb-3 shrink-0 cursor-pointer border ${
+                  index === currentImageIndex
+                    ? "border-black"
+                    : "border-transparent"
+                }`}
                 alt=""
               />
             ))}
           </div>
           <div className="w-full sm:w-[80%]">
-            <img className="w-full h-auto" src={image} alt="" />
+            <img
+              src={image}
+              alt=""
+              className="w-full h-auto touch-pan-y select-none"
+              onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
+              onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
+              onTouchEnd={handleImageSwipe}
+            />
           </div>
         </div>
         {/*----------- proudct information ------------ */}
@@ -56,7 +99,7 @@ const Product = () => {
             <img src={assets.star_icon} alt="" className="w-3 5" />
             <img src={assets.star_icon} alt="" className="w-3 5" />
             <img src={assets.star_dull_icon} alt="" className="w-3 5" />
-            <p className="pl-2">{122}</p>
+            <p className="pl-2">{"(" + review + ")"}</p>
           </div>
           <p className="mt-5 text-3xl font-medium">
             {currency}
@@ -65,25 +108,9 @@ const Product = () => {
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
-          <div className="flex flex-col gap-4 my-8">
-            <p>Select Size</p>
-            <div className="flex gap-2">
-              {productData.sizes.map((item, index) => (
-                <button
-                  onClick={() => setSize(item)}
-                  className={`border py-2 px-4 bg-gray-100 ${
-                    item === size ? "border-orange-500" : ""
-                  }`}
-                  key={index}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
           <button
-            onClick={() => addToCart(productData._id, size)}
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700 cursor-pointer"
+            onClick={() => addToCart(productData._id)}
+            className="bg-black text-white mt-3 px-8 py-3 text-sm active:bg-gray-700 cursor-pointer"
           >
             ADD TO CART
           </button>
@@ -98,20 +125,20 @@ const Product = () => {
       {/*----------------- discription and review section -------- */}
       <div className="mt-20">
         <div className="flex">
-          <p className="border px-5 py-3 text-sm">Description</p>
-          <p className="border px-5 py-3 text-sm">Reviews (122)</p>
+          <p className="border-t border-l border-r px-5 py-3 text-sm">
+            Description
+          </p>
+          {/* <p className="border px-5 py-3 text-sm">Reviews (122)</p> */}
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non,
-            delectus!
+            Experience effortless elegance with this pure cotton saree,
+            handwoven for superior comfort and all-day ease. Lightweight,
+            breathable, and perfect for long working hours — the ideal choice
+            for teachers and modern professionals. Designed in a soft pastel
+            shade with a classic border that adds a touch of timeless charm.
           </p>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolore
-            molestias dolor aliquid rerum beatae ab? Lorem, ipsum dolor sit amet
-            consectetur adipisicing elit. Quibusdam nobis a, aspernatur eius aut
-            rerum.
-          </p>
+          <p>{productData.description}</p>
         </div>
       </div>
       {/* ----------- display related products ---------- */}
