@@ -8,6 +8,7 @@ import userRouter from "./routes/userRoute.js";
 import proudctRouter from "./routes/productRoutes.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRoute from "./routes/orderRoute.js";
+import { globalRateLimit } from "./middleware/globalRatelimiter.js";
 
 // App config
 const app = express();
@@ -17,7 +18,13 @@ connectCloudinary();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
+app.use(globalRateLimit(100, 15 * 60 * 1000));
 
 // api endpoints
 app.use("/api/user", userRouter);

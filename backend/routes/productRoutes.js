@@ -7,6 +7,7 @@ import {
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
+import { globalRateLimit } from "../middleware/globalRatelimiter.js";
 
 const proudctRouter = express.Router();
 
@@ -19,10 +20,14 @@ proudctRouter.post(
     { name: "image3", maxCount: 1 },
     { name: "image4", maxCount: 1 },
   ]),
-  addProduct
+  addProduct,
 );
 proudctRouter.post("/remove", adminAuth, removeProduct);
-proudctRouter.post("/single", singleProduct);
-proudctRouter.get("/list", listProducts);
+proudctRouter.post(
+  "/single",
+  globalRateLimit(60, 15 * 60 * 100),
+  singleProduct,
+);
+proudctRouter.get("/list", globalRateLimit(60, 15 * 60 * 1000), listProducts);
 
 export default proudctRouter;
