@@ -4,7 +4,7 @@ import Title from "./Title";
 import ProductItem from "./ProductItem";
 
 const LatestCollection = () => {
-  const { products } = useContext(ShopContext);
+  const { products, isLoading } = useContext(ShopContext);
   const [latestProductes, setLatestProducts] = useState([]);
 
   useEffect(() => {
@@ -20,17 +20,23 @@ const LatestCollection = () => {
         </p>
       </div>
       {/* rendering products */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
-        {latestProductes.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            images={item.images}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <p className="py-10 text-center text-gray-500">
+          Loading latest products...
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+          {latestProductes.map((item, index) => (
+            <ProductItem
+              key={index}
+              id={item._id}
+              images={item.images}
+              name={item.name}
+              price={item.price}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

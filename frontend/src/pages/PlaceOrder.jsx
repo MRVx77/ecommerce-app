@@ -29,6 +29,7 @@ const PlaceOrder = () => {
     country: "",
     phone: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -52,7 +53,7 @@ const PlaceOrder = () => {
           const { data } = await axios.post(
             backendUrl + "/api/order/verifyRazorpay",
             response,
-            { headers: { token } }
+            { headers: { token } },
           );
           if (data.success) {
             navigate("/orders");
@@ -70,13 +71,14 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     try {
       let orderItems = [];
       for (const items in cartItems) {
         for (const item in cartItems[items]) {
           if (cartItems[items][item]) {
             const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
+              products.find((product) => product._id === items),
             );
             if (itemInfo) {
               itemInfo.size = item;
@@ -99,7 +101,7 @@ const PlaceOrder = () => {
           const response = await axios.post(
             backendUrl + "/api/order/place",
             orderData,
-            { headers: { token } }
+            { headers: { token } },
           );
 
           if (response.data.success) {
@@ -115,7 +117,7 @@ const PlaceOrder = () => {
           const responseStripe = await axios.post(
             backendUrl + "/api/order/stripe",
             orderData,
-            { headers: { token } }
+            { headers: { token } },
           );
           if (responseStripe.data.success) {
             const { session_url } = responseStripe.data;
@@ -130,7 +132,7 @@ const PlaceOrder = () => {
           const responseRazorpay = await axios.post(
             backendUrl + "/api/order/razorpay",
             orderData,
-            { headers: { token } }
+            { headers: { token } },
           );
           if (responseRazorpay.data.success) {
             initPay(responseRazorpay.data.order);
@@ -143,6 +145,8 @@ const PlaceOrder = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -292,9 +296,10 @@ const PlaceOrder = () => {
           <div className="w-full text-end mt-8">
             <button
               type="submit"
-              className="bg-black text-white px-16 py-3 text-sm cursor-pointer"
+              disabled={isLoading}
+              className="bg-black text-white px-16 py-3 text-sm cursor-pointer disabled:opacity-60"
             >
-              PLACE ORDER
+              {isLoading ? "PLACING ORDER..." : "PLACE ORDER"}
             </button>
           </div>
         </div>

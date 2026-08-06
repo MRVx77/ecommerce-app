@@ -5,8 +5,10 @@ import { ShopContext } from "../context/ShopContext";
 const Profile = () => {
   const { backendUrl, token } = useContext(ShopContext);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(backendUrl + "/api/user/profile", {
         headers: { token },
@@ -17,6 +19,8 @@ const Profile = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -24,7 +28,7 @@ const Profile = () => {
     if (token) fetchProfile();
   }, [token]);
 
-  if (!user) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center w-full py-20 text-gray-500">
         Loading profile...

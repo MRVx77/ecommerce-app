@@ -6,7 +6,7 @@ import ProductItem from "../components/ProductItem";
 import { useMemo } from "react";
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, isLoading } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -164,17 +164,23 @@ const Collection = () => {
           </select>
         </div>
         {/* Map products */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filteredProducts.map((item) => (
-            <ProductItem
-              key={item._id}
-              id={item._id}
-              name={item.name}
-              images={item.images}
-              price={item.price}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <p className="py-16 text-center text-gray-500">
+            Loading products...
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+            {filteredProducts.map((item) => (
+              <ProductItem
+                key={item._id}
+                id={item._id}
+                name={item.name}
+                images={item.images}
+                price={item.price}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
