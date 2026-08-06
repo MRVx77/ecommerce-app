@@ -1,8 +1,8 @@
 import orderModel from "../models/orderModel.js";
-import useModel from "../models/userModel.js";
 import Stripe from "stripe";
 import razorpay from "razorpay";
 import userModel from "../models/userModel.js";
+import redisClient from "../config/redis.js";
 
 //global variables
 const currency = "inr";
@@ -32,8 +32,9 @@ const placeOrder = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    await redisClient.del(`orders:${userId}`);
 
-    await useModel.findByIdAndUpdate(userId, { cartData: {} });
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
     res.json({ success: true, message: "Order Placed Successfully" });
   } catch (error) {
     console.log(error);
@@ -59,6 +60,7 @@ const placeOrderStripe = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    await redisClient.del(`orders:${userId}`);
 
     const line_items = items.map((item) => ({
       price_data: {
@@ -101,7 +103,8 @@ const verifyStripe = async (req, res) => {
   try {
     if (success === "true") {
       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-      await useModel.findByIdAndUpdate(userId, { cartData: {} });
+      await userModel.findByIdAndUpdate(userId, { cartData: {} });
+      await redisClient.del(`orders:${userId}`);
       res.json({ success: true });
     } else {
       await orderModel.findByIdAndDelete(orderId);
@@ -130,6 +133,7 @@ const placeOrderRazorpay = async (req, res) => {
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+    await redisClient.del(`orders:${userId}`);
 
     const options = {
       amount: amount * 100,
@@ -157,7 +161,7 @@ const verifyRazorpay = async (req, res) => {
     if (orderInfo.status === "paid") {
       await orderModel.findByIdAndUpdate(orderInfo.receipt, { payment: true });
       await userModel.findByIdAndUpdate(userId, { cartData: {} });
-
+      await redisClient.del(`orders:${userId}`);
       res.json({ success: true, message: "Payment successfully" });
     } else {
       res.json({ success: false, message: "Payment failed" });
@@ -183,7 +187,19 @@ const allOrders = async (req, res) => {
 const userOrders = async (req, res) => {
   try {
     const { userId } = req.body;
+    const cached = await redisClient.get(`orders:${userId}`);
+    if (cached) {
+      return res.json({ success: true, orders: JSON.parse(cached) });
+    }
     const orders = await orderModel.find({ userId });
+
+    await redisClient.set(
+      `orders:${userId}`,
+      JSON.stringify(orders),
+      "EX",
+      60 * 2,
+    );
+
     res.json({ success: true, orders });
   } catch (error) {
     console.log(error);

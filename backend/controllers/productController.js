@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import redisClient from "../config/redis.js";
 
 // function for add product
 const addProduct = async (req, res) => {
@@ -20,7 +21,7 @@ const addProduct = async (req, res) => {
     const image4 = req.files.image4 && req.files.image4[0];
 
     const images = [image1, image2, image3, image4].filter(
-      (item) => item !== undefined
+      (item) => item !== undefined,
     );
 
     let imagesUrl = await Promise.all(
@@ -29,7 +30,7 @@ const addProduct = async (req, res) => {
           resource_type: "image",
         });
         return result.secure_url;
-      })
+      }),
     );
 
     const productData = {
@@ -49,6 +50,8 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
+    await redisClient.del("all_products");
+
     res.json({ success: true, message: "Product added" });
   } catch (error) {
     console.log(error);
@@ -59,7 +62,19 @@ const addProduct = async (req, res) => {
 //function for list products
 const listProducts = async (req, res) => {
   try {
+    const cache = await redisClient.get("all_products");
+    if (cache) {
+      return res.json({ success: true, products: JSON.parse(cache) });
+    }
+
     const products = await productModel.find({});
+
+    await redisClient.set(
+      "all_products",
+      JSON.stringify(products),
+      "EX",
+      60 * 10,
+    );
     res.json({ success: true, products });
   } catch (error) {
     console.log(error);
@@ -71,6 +86,9 @@ const listProducts = async (req, res) => {
 const removeProduct = async (req, res) => {
   try {
     await productModel.findByIdAndDelete(req.body.id);
+    await redisClient.del("all_products");
+    await redisClient.del(`product:${req.body.id}`);
+
     res.json({ success: true, message: "Product removed" });
   } catch (error) {
     console.log(error);
@@ -82,7 +100,21 @@ const removeProduct = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
+
+    const cached = await redisClient.get(`product:${productId}`);
+
+    if (cached) {
+      return res.json({ success: true, product: JSON.parse(cached) });
+    }
+
     const product = await productModel.findById(productId);
+
+    await redisClient.set(
+      `product:${productId}`,
+      JSON.stringify(product),
+      "EX",
+      60 * 30,
+    ); //30m (EX)expirey
 
     res.json({ success: true, product });
   } catch (error) {
