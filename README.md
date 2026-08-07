@@ -10,7 +10,9 @@ A full-stack E-Commerce web application with a dedicated Admin Dashboard that al
 
 User authentication & authorization using JWT
 
-Browse products with dynamic data
+Browse products with dynamic data and exact category/type filtering
+
+Select product sizes before adding to cart
 
 Add/remove products from cart
 
@@ -27,6 +29,8 @@ Add, update, and delete products
 View and manage customer orders
 
 Secure admin-only access
+
+Easily accessible via quick-link button in the frontend navigation
 
 Manage multi-user data efficiently
 
@@ -60,6 +64,8 @@ RESTful APIs
 
 Secure role-based access
 
+Advanced Redis Rate Limiting (Global and Endpoint-specific)
+
 
 
 🧠 Project Purpose & Learning Outcomes
@@ -86,6 +92,8 @@ Real-time payment handling and order creation
 
 Scalable backend architecture for e-commerce platforms
 
+Robust production deployment (CORS & Proxy Trust configured for Vercel/Render)
+
 📌 API Highlights
 
 Custom CRUD APIs for:
@@ -103,8 +111,6 @@ RESTful architecture for maintainability
 🚧 Future Enhancements
 
 Order status tracking
-
-Product search & filters
 
 Pagination & performance optimization
 

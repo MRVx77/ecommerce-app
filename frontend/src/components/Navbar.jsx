@@ -58,6 +58,13 @@ const Navbar = () => {
           />
         )}
 
+        <button 
+          onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174', '_blank')} 
+          className="bg-black text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg hover:bg-gray-800 hover:shadow-xl active:scale-95 transition-all"
+        >
+          Admin
+        </button>
+
         <div className="group relative">
           <img
             onClick={() => (token ? null : navigate("/login"))}
@@ -150,6 +157,14 @@ const Navbar = () => {
           >
             CONTACT
           </NavLink>
+          <div className="p-6 mt-4">
+            <button
+              onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174', '_blank')}
+              className="w-full bg-black text-white py-3 rounded-full font-bold text-base shadow-lg active:scale-95 hover:bg-gray-800 transition-all tracking-wide"
+            >
+              ADMIN PANEL
+            </button>
+          </div>
         </div>
       </div>
     </div>
