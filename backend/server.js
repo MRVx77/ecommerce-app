@@ -20,11 +20,11 @@ connectCloudinary();
 app.use(express.json());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [process.env.FRONTEND_URL, process.env.ADMIN_URL],
     credentials: true,
   }),
 );
-app.use(globalRateLimit(100, 15 * 60 * 1000));
+app.use(globalRateLimit(100, 15 * 60 * 1000, "global"));
 
 // api endpoints
 app.use("/api/user", userRouter);

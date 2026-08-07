@@ -13,13 +13,13 @@ cartRouter.post("/get", authUser, getUserCart);
 cartRouter.post(
   "/add",
   authUser,
-  globalRateLimit(30, 15 * 60 * 1000),
+  globalRateLimit(30, 15 * 60 * 1000, "cart-add"),
   addToCart,
 );
 cartRouter.post(
   "/update",
   authUser,
-  globalRateLimit(30, 15 * 60 * 1000),
+  globalRateLimit(30, 15 * 60 * 1000, "cart-update"),
   updateCart,
 );
 

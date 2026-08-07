@@ -9,6 +9,7 @@ const Product = () => {
   const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProdcutData] = useState(false);
   const [image, setImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const review = Math.floor(Math.random() * 100) + 1;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -47,6 +48,7 @@ const Product = () => {
         setProdcutData(item);
         setCurrentImageIndex(0);
         setImage(item.images[0]);
+        setSelectedSize("");
       }
     });
   };
@@ -108,9 +110,28 @@ const Product = () => {
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
+          {/* Size Selector */}
+          <div className="mt-5">
+            <p className="mb-2 text-sm font-medium">SELECT SIZE</p>
+            <div className="flex gap-2 flex-wrap">
+              {productData.sizes.map((size, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-4 py-2 text-sm border ${
+                    selectedSize === size
+                      ? "border-black bg-black text-white"
+                      : "border-gray-300 hover:border-black"
+                  } cursor-pointer transition-all`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
           <button
-            onClick={() => addToCart(productData._id)}
-            className="bg-black text-white mt-3 px-8 py-3 text-sm active:bg-gray-700 cursor-pointer"
+            onClick={() => addToCart(productData._id, selectedSize)}
+            className="bg-black text-white mt-5 px-8 py-3 text-sm active:bg-gray-700 cursor-pointer"
           >
             ADD TO CART
           </button>
@@ -131,13 +152,6 @@ const Product = () => {
           {/* <p className="border px-5 py-3 text-sm">Reviews (122)</p> */}
         </div>
         <div className="flex flex-col gap-4 border px-6 py-6 text-sm text-gray-500">
-          <p>
-            Experience effortless elegance with this pure cotton saree,
-            handwoven for superior comfort and all-day ease. Lightweight,
-            breathable, and perfect for long working hours — the ideal choice
-            for teachers and modern professionals. Designed in a soft pastel
-            shade with a classic border that adds a touch of timeless charm.
-          </p>
           <p>{productData.description}</p>
         </div>
       </div>

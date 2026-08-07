@@ -25,9 +25,9 @@ proudctRouter.post(
 proudctRouter.post("/remove", adminAuth, removeProduct);
 proudctRouter.post(
   "/single",
-  globalRateLimit(60, 15 * 60 * 100),
+  globalRateLimit(60, 15 * 60 * 1000, "product-single"),
   singleProduct,
 );
-proudctRouter.get("/list", globalRateLimit(60, 15 * 60 * 1000), listProducts);
+proudctRouter.get("/list", globalRateLimit(60, 15 * 60 * 1000, "product-list"), listProducts);
 
 export default proudctRouter;
