@@ -12,6 +12,7 @@ import { globalRateLimit } from "./middleware/globalRatelimiter.js";
 
 // App config
 const app = express();
+app.set("trust proxy", 1); // Trust the Vercel proxy
 const port = process.env.PORT || 4000;
 connnectDb();
 connectCloudinary();
