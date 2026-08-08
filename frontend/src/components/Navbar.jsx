@@ -15,6 +15,7 @@ const Navbar = () => {
     setCartItems,
   } = useContext(ShopContext);
 
+  const location = useLocation();
   const isCollectionPage = location.pathname.includes("collection");
 
   const logout = () => {
@@ -48,7 +49,14 @@ const Navbar = () => {
         </NavLink>
       </ul>
 
-      <div className="flex item-center gap-6">
+      <div className="flex items-center gap-6">
+        <button 
+          onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174', '_blank')} 
+          className="bg-black text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg hover:bg-gray-800 hover:shadow-xl active:scale-95 transition-all"
+        >
+          Admin
+        </button>
+
         {isCollectionPage && (
           <img
             onClick={() => setShowSearch(true)}
@@ -57,13 +65,6 @@ const Navbar = () => {
             alt=""
           />
         )}
-
-        <button 
-          onClick={() => window.open(import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174', '_blank')} 
-          className="bg-black text-white px-4 py-1.5 sm:px-6 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg hover:bg-gray-800 hover:shadow-xl active:scale-95 transition-all"
-        >
-          Admin
-        </button>
 
         <div className="group relative">
           <img

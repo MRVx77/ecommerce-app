@@ -85,7 +85,25 @@ const listProducts = async (req, res) => {
 //function for removing product
 const removeProduct = async (req, res) => {
   try {
+    const product = await productModel.findById(req.body.id);
+
+    if (!product) {
+      return res.json({ success: false, message: "Product not Found -_-" });
+    }
+    //cloudinary
+    if (product.images && product.images.length > 0) {
+      await Promise.all(
+        product.images.map(async (imageUrl) => {
+          const publicId = imageUrl.split("/").pop().split(".")[0];
+
+          await cloudinary.uploader.destroy(publicId);
+        }),
+      );
+    }
+    //db
     await productModel.findByIdAndDelete(req.body.id);
+
+    //redis
     await redisClient.del("all_products");
     await redisClient.del(`product:${req.body.id}`);
 
